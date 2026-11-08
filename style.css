@@ -1,0 +1,340 @@
+﻿
+/* ==============================
+   GENERAL STYLING
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f0eaff, #fff9e6);
+    min-height: 100vh;
+    color: #554477;
+}
+
+a {
+    text-decoration: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* ==============================
+   NAVBAR
+============================== */
+
+.navbar {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 15px 5%;
+    box-shadow: 0 3px 12px rgba(85, 68, 119, 0.06);
+}
+
+.navbar-brand {
+    color: #554477 !important;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: #665582 !important;
+    font-weight: 500;
+    margin: 0 8px;
+}
+
+    .nav-link:hover {
+        color: #a78bda !important;
+    }
+
+
+/* ==============================
+   BUTTONS
+============================== */
+
+.btn-primary,
+.add-btn {
+    background: linear-gradient(135deg, #b99be8, #e6c96f);
+    border: none;
+    color: #554477;
+    padding: 11px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+    .btn-primary:hover,
+    .add-btn:hover {
+        background: linear-gradient(135deg, #a98ad9, #e2c15e);
+        color: #44345f;
+    }
+
+.btn-outline-primary {
+    border: 1px solid #a78bda;
+    color: #75619a;
+    border-radius: 10px;
+}
+
+    .btn-outline-primary:hover {
+        background: #e8ddff;
+        color: #554477;
+    }
+
+
+/* ==============================
+   HOME PAGE
+============================== */
+
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding: 60px 5%;
+    background: linear-gradient(120deg, #eee5ff, #fff4cf);
+}
+
+    .hero h1 {
+        color: #554477;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .hero p {
+        color: #75658f;
+        font-size: 18px;
+        line-height: 1.7;
+    }
+
+.hero-card {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    border-radius: 22px;
+    box-shadow: 0 8px 25px rgba(85, 68, 119, 0.1);
+}
+
+
+/* ==============================
+   LOGIN AND SIGNUP PAGES
+============================== */
+
+.auth-container {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(85, 68, 119, 0.1);
+}
+
+    .auth-card h2 {
+        color: #554477;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .auth-card p {
+        color: #827594;
+    }
+
+.form-label {
+    color: #554477;
+    font-weight: 600;
+}
+
+.form-control,
+.form-select {
+    padding: 11px 13px;
+    border: 1px solid #ded3f1;
+    border-radius: 9px;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #a78bda;
+        box-shadow: 0 0 0 0.2rem rgba(167, 139, 218, 0.18);
+    }
+
+.auth-link {
+    color: #8064b5;
+    font-weight: 600;
+}
+
+    .auth-link:hover {
+        color: #554477;
+    }
+
+
+/* ==============================
+   DASHBOARD SIDEBAR
+============================== */
+
+.sidebar {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #e8ddff, #fff0bd);
+    padding: 30px 20px;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: bold;
+    color: #554477;
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    color: #554477;
+    padding: 13px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background: rgba(255, 255, 255, 0.7);
+    }
+
+
+/* ==============================
+   DASHBOARD CONTENT
+============================== */
+
+.main-content {
+    padding: 35px;
+}
+
+.welcome-text {
+    color: #554477;
+    margin-bottom: 30px;
+}
+
+    .welcome-text p {
+        color: #827594;
+    }
+
+
+/* ==============================
+   STATISTICS CARDS
+============================== */
+
+.stat-card {
+    padding: 25px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff, #fff5cf);
+    box-shadow: 0 4px 15px rgba(85, 68, 119, 0.08);
+    height: 100%;
+}
+
+    .stat-card h6 {
+        color: #75658f;
+        margin-bottom: 15px;
+    }
+
+    .stat-card h2 {
+        color: #554477;
+        font-weight: bold;
+    }
+
+
+/* ==============================
+   DASHBOARD SECTIONS
+============================== */
+
+.section-card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    margin-top: 30px;
+    box-shadow: 0 4px 15px rgba(85, 68, 119, 0.08);
+}
+
+.section-title {
+    color: #554477;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+
+/* ==============================
+   TABLES
+============================== */
+
+.table {
+    vertical-align: middle;
+}
+
+    .table th {
+        background-color: #f0eaff;
+        color: #554477;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .table td {
+        color: #75658f;
+    }
+
+.empty-message {
+    text-align: center;
+    padding: 25px;
+    color: #8b819d;
+}
+
+
+/* ==============================
+   FOOTER
+============================== */
+
+footer {
+    color: #827594;
+    font-size: 14px;
+}
+
+
+/* ==============================
+   RESPONSIVE DESIGN
+============================== */
+
+@media (max-width: 768px) {
+
+    .hero {
+        text-align: center;
+        padding: 45px 20px;
+    }
+
+        .hero h1 {
+            font-size: 34px;
+        }
+
+    .sidebar {
+        min-height: auto;
+    }
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .auth-card {
+        padding: 25px;
+    }
+}
+.feature-lavender {
+    background: #f0eaff;
+}
+
+.feature-yellow {
+    background: #fff5cf;
+}
