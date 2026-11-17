@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Account Locked";
+}
+
+<div class="auth-card text-center">
+
+    <h2>Account Locked</h2>
+    <p class="mb-4">
+        Too many failed login attempts. Your account is locked for 5 minutes.
+        Please try again later or reset your password.
+    </p>
+
+    <a asp-action="ForgotPassword" class="btn btn-primary w-100 mb-3">Reset Password</a>
+    <a asp-action="Login" class="auth-link">Back to Login</a>
+
+</div>

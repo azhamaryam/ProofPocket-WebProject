@@ -1,0 +1,64 @@
+@model ProductFormViewModel
+@{
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+}
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" placeholder="Enter product name">
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" asp-items="categories" class="form-select">
+            <option value="">Select category</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Brand" class="form-label"></label>
+        <input asp-for="Brand" class="form-control" placeholder="Enter brand">
+        <span asp-validation-for="Brand" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Model" class="form-label"></label>
+        <input asp-for="Model" class="form-control" placeholder="Enter model">
+        <span asp-validation-for="Model" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Store" class="form-label"></label>
+        <input asp-for="Store" class="form-control" placeholder="Enter store name">
+        <span asp-validation-for="Store" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" placeholder="Enter price">
+        <span asp-validation-for="Price" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="PurchaseDate" class="form-label"></label>
+        <input asp-for="PurchaseDate" type="date" max="@(DateTime.Today.ToString("yyyy-MM-dd"))" class="form-control">
+        <span asp-validation-for="PurchaseDate" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="WarrantyMonths" class="form-label"></label>
+        <input asp-for="WarrantyMonths" type="number" min="1" max="120" class="form-control" placeholder="Enter warranty period">
+        <span asp-validation-for="WarrantyMonths" class="text-danger small"></span>
+    </div>
+
+    <div class="col-12">
+        <label asp-for="InvoiceNumber" class="form-label"></label>
+        <input asp-for="InvoiceNumber" class="form-control" placeholder="Enter invoice or reference number">
+        <span asp-validation-for="InvoiceNumber" class="text-danger small"></span>
+    </div>
+
+</div>

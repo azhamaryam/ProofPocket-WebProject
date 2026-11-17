@@ -1,0 +1,30 @@
+@model ProductFormViewModel
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="welcome-text">
+    <h2>Edit Product</h2>
+    <p>Update the details of your product and its warranty.</p>
+</div>
+
+<div class="section-card">
+
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+
+        <input type="hidden" asp-for="Id">
+
+        <partial name="_ProductFields" model="Model" />
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+            <a asp-action="Index" class="btn btn-outline-primary">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

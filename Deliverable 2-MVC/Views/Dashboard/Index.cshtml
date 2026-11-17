@@ -1,0 +1,153 @@
+@model UserDashboardViewModel
+@{
+    ViewData["Title"] = "User Dashboard";
+}
+
+<div class="welcome-text">
+    <h2>Welcome@(string.IsNullOrWhiteSpace(Model.FullName) ? "" : ", " + Model.FullName)!</h2>
+    <p>Manage your products and keep track of their warranties.</p>
+</div>
+
+<!-- Statistics -->
+<div class="row g-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Total Products</h6>
+            <h2>@Model.TotalProducts</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Active Warranties</h6>
+            <h2>@Model.ActiveWarranties</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Expiring Soon</h6>
+            <h2>@Model.ExpiringSoon</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Expired Warranties</h6>
+            <h2>@Model.ExpiredWarranties</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Expiring Soon -->
+<div class="section-card">
+
+    <h4 class="section-title">Expiring Soon</h4>
+
+    @if (Model.ExpiringSoonProducts.Any())
+    {
+        foreach (var p in Model.ExpiringSoonProducts)
+        {
+            var daysText = p.DaysLeft == 0 ? "today" : p.DaysLeft == 1 ? "1 day left" : p.DaysLeft + " days left";
+
+            <div class="expiring-item">
+                <span><strong>@p.Name</strong> <span class="text-muted">(@p.Brand)</span></span>
+                <small>Expires @p.ExpiryDate.ToString("dd MMM yyyy") (@daysText)</small>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="empty-message mb-0">
+            No expiring warranties yet.
+        </p>
+    }
+
+</div>
+
+<!-- My Products -->
+<div class="section-card" id="products">
+
+    <h4 class="section-title">My Products</h4>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Purchase Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Products.Any())
+                {
+                    foreach (var p in Model.Products)
+                    {
+                        <tr>
+                            <td>@p.Name</td>
+                            <td>@p.Category?.Name</td>
+                            <td>@p.Brand</td>
+                            <td>@p.PurchaseDate.ToString("dd MMM yyyy")</td>
+                            <td>@p.ExpiryDate.ToString("dd MMM yyyy")</td>
+                            <td><span class="status-badge @p.StatusCss">@p.StatusText</span></td>
+                            <td class="text-nowrap">
+                                <a asp-action="Edit" asp-route-id="@p.Id" class="btn-action">Edit</a>
+                                <form asp-action="DeleteProduct" asp-route-id="@p.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Delete this product?');">
+                                    <button type="submit" class="btn-action btn-action-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="empty-message">
+                            No products added yet.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+<!-- Add Product Form -->
+<div class="section-card" id="add-product">
+
+    <h4 class="section-title">Add New Product</h4>
+
+    <form asp-action="AddProduct" method="post">
+
+        <partial name="_ProductFields" for="NewProduct" />
+
+        <button type="submit" class="btn btn-primary mt-4">
+            Save Product
+        </button>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <script>
+            document.getElementById('add-product').scrollIntoView();
+        </script>
+    }
+}

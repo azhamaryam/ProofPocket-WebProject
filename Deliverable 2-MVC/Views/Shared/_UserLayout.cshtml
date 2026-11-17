@@ -1,0 +1,58 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - ProofPocket</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+
+                <div class="logo">ProofPocket</div>
+
+                <a asp-controller="Dashboard" asp-action="Index"
+                   class="@(controller == "Dashboard" && action == "Index" ? "active" : "")">Dashboard</a>
+                <a asp-controller="Dashboard" asp-action="Index" asp-fragment="products">My Products</a>
+                <a asp-controller="Dashboard" asp-action="Index" asp-fragment="add-product">Add Product</a>
+                <a asp-controller="Account" asp-action="ChangePassword"
+                   class="@(controller == "Account" && action == "ChangePassword" ? "active" : "")">Change Password</a>
+                <a asp-controller="Home" asp-action="Index">Home</a>
+
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="sidebar-btn">Logout</button>
+                </form>
+
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+
+                <partial name="_Alerts" />
+
+                @RenderBody()
+
+                <footer class="text-center mt-5 mb-3">
+                    © @DateTime.Now.Year ProofPocket. All rights reserved.
+                </footer>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
