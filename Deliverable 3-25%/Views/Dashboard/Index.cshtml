@@ -1,0 +1,305 @@
+@model UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "User Dashboard";
+}
+
+<div class="welcome-text">
+    <h2>Welcome@(string.IsNullOrWhiteSpace(Model.FullName) ? "" : ", " + Model.FullName)!</h2>
+    <p>Manage your products and keep track of their warranties.</p>
+</div>
+
+<div id="ajaxMessage"></div>
+
+<!-- Statistics -->
+<div class="row g-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Total Products</h6>
+            <h2 id="totalProducts">@Model.TotalProducts</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Active Warranties</h6>
+            <h2 id="activeWarranties">@Model.ActiveWarranties</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Expiring Soon</h6>
+            <h2 id="expiringSoon">@Model.ExpiringSoon</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Expired Warranties</h6>
+            <h2 id="expiredWarranties">@Model.ExpiredWarranties</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Expiring Soon -->
+<div class="section-card">
+    <h4 class="section-title">Expiring Soon</h4>
+
+    <div id="expiringList">
+        @if (Model.ExpiringSoonProducts.Any())
+        {
+            foreach (var p in Model.ExpiringSoonProducts)
+            {
+                var daysText = p.DaysLeft == 0
+                ? "today"
+                : p.DaysLeft == 1
+                ? "1 day left"
+                : p.DaysLeft + " days left";
+
+                <div class="expiring-item">
+                    <span>
+                        <strong>@p.Name</strong>
+                        <span class="text-muted">(@p.Brand)</span>
+                    </span>
+
+                    <small>
+                        Expires @p.ExpiryDate.ToString("dd MMM yyyy")
+                        (@daysText)
+                    </small>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="empty-message mb-0">No expiring warranties yet.</p>
+        }
+    </div>
+</div>
+
+<!-- My Products -->
+<div class="section-card" id="products">
+
+    <h4 class="section-title">My Products</h4>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Purchase Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="productsTableBody">
+
+                @if (Model.Products.Any())
+                {
+                    foreach (var p in Model.Products)
+                    {
+                        <tr id="product-@p.Id">
+
+                            <td>@p.Name</td>
+                            <td>@p.Category?.Name</td>
+                            <td>@p.Brand</td>
+                            <td>@p.PurchaseDate.ToString("dd MMM yyyy")</td>
+                            <td>@p.ExpiryDate.ToString("dd MMM yyyy")</td>
+
+                            <td>
+                                <span class="status-badge @p.StatusCss">
+                                    @p.StatusText
+                                </span>
+                            </td>
+
+                            <td class="text-nowrap">
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@p.Id"
+                                   class="btn-action">
+                                    Edit
+                                </a>
+
+                                <form asp-action="DeleteProduct"
+                                      asp-route-id="@p.Id"
+                                      method="post"
+                                      class="d-inline delete-product-form">
+
+                                    <button type="submit"
+                                            class="btn-action btn-action-danger">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr id="emptyProductsRow">
+                        <td colspan="7" class="empty-message">
+                            No products added yet.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Product -->
+<div class="section-card" id="add-product">
+
+    <h4 class="section-title">Add New Product</h4>
+
+    <form asp-action="AddProduct"
+          method="post"
+          id="addProductForm">
+
+        <partial name="_ProductFields" for="NewProduct" />
+
+        <button type="submit" class="btn btn-primary mt-4">
+            Save Product
+        </button>
+
+    </form>
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const addProductForm = document.getElementById("addProductForm");
+        const productsTableBody = document.getElementById("productsTableBody");
+
+        function showMessage(message, type = "success") {
+            document.getElementById("ajaxMessage").innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show alert-pp">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+        }
+
+        function getToken(form) {
+            return form.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            )?.value;
+        }
+
+        addProductForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!$(addProductForm).valid()) {
+                return;
+            }
+
+            const formData = new FormData(addProductForm);
+
+            try {
+                const response = await fetch(addProductForm.action, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "RequestVerificationToken": getToken(addProductForm)
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showMessage(result.message || "Please check the form.", "danger");
+                    return;
+                }
+
+                showMessage(result.message);
+
+                // Update total product count without refreshing.
+                const total = document.getElementById("totalProducts");
+                total.textContent = Number(total.textContent) + 1;
+
+                // Clear the form after successful submission.
+                addProductForm.reset();
+
+                // Remove the empty table message if it exists.
+                document.getElementById("emptyProductsRow")?.remove();
+
+                // A new row can be displayed after the server returns its details.
+                if (result.rowHtml) {
+                    productsTableBody.insertAdjacentHTML(
+                        "afterbegin", result.rowHtml
+                    );
+                }
+            }
+            catch {
+                showMessage("Something went wrong. Please try again.", "danger");
+            }
+        });
+
+        // Delete product using AJAX.
+        document.addEventListener("submit", async function (e) {
+            const form = e.target.closest(".delete-product-form");
+
+            if (!form) return;
+
+            e.preventDefault();
+
+            if (!confirm("Delete this product?")) return;
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "RequestVerificationToken": getToken(form)
+                    },
+                    body: new FormData(form)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showMessage(result.message || "Could not delete product.", "danger");
+                    return;
+                }
+
+                form.closest("tr").remove();
+
+                const total = document.getElementById("totalProducts");
+                total.textContent = Math.max(0, Number(total.textContent) - 1);
+
+                if (!productsTableBody.querySelector("tr")) {
+                    productsTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-message">
+                                No products added yet.
+                            </td>
+                        </tr>`;
+                }
+
+                showMessage(result.message);
+            }
+            catch {
+                showMessage("Something went wrong. Please try again.", "danger");
+            }
+        });
+    </script>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <script>
+            document.getElementById("add-product").scrollIntoView();
+        </script>
+    }
+}

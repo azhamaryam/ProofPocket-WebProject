@@ -1,0 +1,93 @@
+@model ProductFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="welcome-text">
+    <h2>Edit Product</h2>
+    <p>Update the details of your product and its warranty.</p>
+</div>
+
+<div id="editMessage"></div>
+
+<div class="section-card">
+
+    <form asp-action="Edit"
+          asp-route-id="@Model.Id"
+          method="post"
+          id="editProductForm">
+
+        <input type="hidden" asp-for="Id">
+
+        <partial name="_ProductFields" model="Model" />
+
+        <div class="mt-4">
+
+            <button type="submit" class="btn btn-primary me-2">
+                Save Changes
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-primary">
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const editForm = document.getElementById("editProductForm");
+
+        editForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!$(editForm).valid()) return;
+
+            const token = editForm.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            )?.value;
+
+            try {
+                const response = await fetch(editForm.action, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "RequestVerificationToken": token
+                    },
+                    body: new FormData(editForm)
+                });
+
+                const result = await response.json();
+
+                const message = document.getElementById("editMessage");
+
+                if (!response.ok || !result.success) {
+                    message.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${result.message || "Please correct the form."}
+                        </div>`;
+                    return;
+                }
+
+                message.innerHTML = `
+                    <div class="alert alert-success">
+                        ${result.message}
+                        <a href="/Dashboard/Index#products">Return to My Products</a>
+                    </div>`;
+            }
+            catch {
+                document.getElementById("editMessage").innerHTML = `
+                    <div class="alert alert-danger">
+                        Something went wrong. Please try again.
+                    </div>`;
+            }
+        });
+    </script>
+}

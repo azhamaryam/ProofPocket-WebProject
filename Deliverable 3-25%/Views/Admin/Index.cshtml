@@ -1,0 +1,423 @@
+@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="welcome-text">
+    <h2>Admin Dashboard</h2>
+    <p>Manage users, product categories and system information.</p>
+</div>
+
+<div id="adminMessage"></div>
+
+<!-- Statistics -->
+<div class="row g-4">
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Registered Users</h6>
+            <h2 id="registeredUsers">@Model.RegisteredUsers</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Product Categories</h6>
+            <h2 id="productCategories">@Model.ProductCategories</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Total Products</h6>
+            <h2>@Model.TotalProducts</h2>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card">
+            <h6>Total Warranties</h6>
+            <h2>@Model.TotalWarranties</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Registered Users -->
+<div class="section-card" id="users">
+
+    <h4 class="section-title">Registered Users</h4>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Registration Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="usersTableBody">
+
+                @if (Model.Users.Any())
+                {
+                    foreach (var u in Model.Users)
+                    {
+                        <tr id="user-@u.Id">
+                            <td title="@u.Id">
+                                @(u.Id.Length > 8 ? u.Id.Substring(0, 8) : u.Id)
+                            </td>
+
+                            <td>@u.FullName</td>
+                            <td>@u.Email</td>
+                            <td>@u.RegistrationDate.ToString("dd MMM yyyy")</td>
+
+                            <td>
+                                <form asp-action="DeleteUser"
+                                      asp-route-id="@u.Id"
+                                      method="post"
+                                      class="d-inline delete-user-form">
+
+                                    <button type="submit"
+                                            class="btn-action btn-action-danger">
+                                        Delete
+                                    </button>
+
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr id="emptyUsersRow">
+                        <td colspan="5" class="empty-message">
+                            No registered users yet.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Product Categories -->
+<div class="section-card" id="categories">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+
+        <h4 class="section-title mb-0">Product Categories</h4>
+
+        <button class="add-btn"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#addCategoryModal">
+            + Add Category
+        </button>
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Category ID</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="categoriesTableBody">
+
+                @if (Model.Categories.Any())
+                {
+                    foreach (var c in Model.Categories)
+                    {
+                        <tr id="category-@c.Id">
+                            <td>@c.Id</td>
+                            <td>@c.Name</td>
+                            <td>@(string.IsNullOrWhiteSpace(c.Description) ? "—" : c.Description)</td>
+
+                            <td class="text-nowrap">
+
+                                <a asp-action="EditCategory"
+                                   asp-route-id="@c.Id"
+                                   class="btn-action">
+                                    Edit
+                                </a>
+
+                                <form asp-action="DeleteCategory"
+                                      asp-route-id="@c.Id"
+                                      method="post"
+                                      class="d-inline delete-category-form">
+
+                                    <button type="submit"
+                                            class="btn-action btn-action-danger">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr id="emptyCategoriesRow">
+                        <td colspan="4" class="empty-message">
+                            No product categories added yet.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade"
+     id="addCategoryModal"
+     tabindex="-1"
+     aria-labelledby="addCategoryTitle"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form asp-action="AddCategory"
+                  method="post"
+                  id="addCategoryForm">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryTitle">
+                        Add Category
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label for="catName" class="form-label">
+                            Category Name
+                        </label>
+
+                        <input type="text"
+                               id="catName"
+                               name="Name"
+                               class="form-control"
+                               maxlength="100"
+                               required
+                               placeholder="Enter category name">
+                    </div>
+
+                    <div>
+                        <label for="catDescription" class="form-label">
+                            Description
+                        </label>
+
+                        <textarea id="catDescription"
+                                  name="Description"
+                                  class="form-control"
+                                  rows="3"
+                                  maxlength="300"
+                                  placeholder="Enter a short description">
+                        </textarea>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Save Category
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function showAdminMessage(message, type = "success") {
+            document.getElementById("adminMessage").innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show alert-pp">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+        }
+
+        function tokenOf(form) {
+            return form.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            )?.value;
+        }
+
+        function ajaxHeaders(form) {
+            return {
+                "X-Requested-With": "XMLHttpRequest",
+                "RequestVerificationToken": tokenOf(form)
+            };
+        }
+
+        // Add category.
+        const addCategoryForm = document.getElementById("addCategoryForm");
+
+        addCategoryForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!addCategoryForm.reportValidity()) return;
+
+            try {
+                const response = await fetch(addCategoryForm.action, {
+                    method: "POST",
+                    headers: ajaxHeaders(addCategoryForm),
+                    body: new FormData(addCategoryForm)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showAdminMessage(result.message || "Could not add category.", "danger");
+                    return;
+                }
+
+                showAdminMessage(result.message);
+
+                // Close modal.
+                bootstrap.Modal.getInstance(
+                    document.getElementById("addCategoryModal")
+                ).hide();
+
+                // Clear fields.
+                addCategoryForm.reset();
+
+                // Refresh the category list from the server so the new row
+                // is rendered with the correct Edit/Delete links.
+                await refreshAdminDashboard();
+            }
+            catch {
+                showAdminMessage("Something went wrong. Please try again.", "danger");
+            }
+        });
+
+        // Delete category or user.
+        document.addEventListener("submit", async function (e) {
+            const form = e.target.closest(
+                ".delete-category-form, .delete-user-form"
+            );
+
+            if (!form) return;
+
+            e.preventDefault();
+
+            const isUser = form.classList.contains("delete-user-form");
+
+            if (!confirm(isUser
+                ? "Delete this user and all of their products?"
+                : "Delete this category?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    headers: ajaxHeaders(form),
+                    body: new FormData(form)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    showAdminMessage(result.message || "Delete operation failed.", "danger");
+                    return;
+                }
+
+                form.closest("tr").remove();
+
+                if (isUser) {
+                    const count = document.getElementById("registeredUsers");
+                    count.textContent = Math.max(0, Number(count.textContent) - 1);
+
+                    if (!document.querySelector("#usersTableBody tr")) {
+                        document.getElementById("usersTableBody").innerHTML = `
+                            <tr>
+                                <td colspan="5" class="empty-message">
+                                    No registered users yet.
+                                </td>
+                            </tr>`;
+                    }
+                }
+                else {
+                    const count = document.getElementById("productCategories");
+                    count.textContent = Math.max(0, Number(count.textContent) - 1);
+
+                    if (!document.querySelector("#categoriesTableBody tr")) {
+                        document.getElementById("categoriesTableBody").innerHTML = `
+                            <tr>
+                                <td colspan="4" class="empty-message">
+                                    No product categories added yet.
+                                </td>
+                            </tr>`;
+                    }
+                }
+
+                showAdminMessage(result.message);
+            }
+            catch {
+                showAdminMessage("Something went wrong. Please try again.", "danger");
+            }
+        });
+
+        async function refreshAdminDashboard() {
+            const response = await fetch("/Admin/Index", {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            const newCategories = doc.getElementById("categoriesTableBody");
+
+            if (newCategories) {
+                document.getElementById("categoriesTableBody").innerHTML =
+                    newCategories.innerHTML;
+            }
+
+            const newCount = doc.getElementById("productCategories");
+
+            if (newCount) {
+                document.getElementById("productCategories").textContent =
+                    newCount.textContent;
+            }
+        }
+    </script>
+}

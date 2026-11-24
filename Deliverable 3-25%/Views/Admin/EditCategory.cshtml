@@ -1,0 +1,118 @@
+@model Category
+
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="welcome-text">
+    <h2>Edit Category</h2>
+    <p>Update the name and description of this product category.</p>
+</div>
+
+<div id="editCategoryMessage"></div>
+
+<div class="section-card" style="max-width: 640px;">
+
+    <form asp-action="EditCategory"
+          asp-route-id="@Model.Id"
+          method="post"
+          id="editCategoryForm">
+
+        <input type="hidden" asp-for="Id">
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+
+            <input asp-for="Name"
+                   class="form-control"
+                   placeholder="Enter category name">
+
+            <span asp-validation-for="Name"
+                  class="text-danger small">
+            </span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Description" class="form-label"></label>
+
+            <textarea asp-for="Description"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Enter a short description">
+            </textarea>
+
+            <span asp-validation-for="Description"
+                  class="text-danger small">
+            </span>
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2">
+            Save Changes
+        </button>
+
+        <a asp-action="Index"
+           asp-fragment="categories"
+           class="btn btn-outline-primary">
+            Cancel
+        </a>
+
+    </form>
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const editCategoryForm =
+            document.getElementById("editCategoryForm");
+
+        editCategoryForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!$(editCategoryForm).valid()) return;
+
+            const token = editCategoryForm.querySelector(
+                'input[name="__RequestVerificationToken"]'
+            )?.value;
+
+            try {
+                const response = await fetch(editCategoryForm.action, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "RequestVerificationToken": token
+                    },
+                    body: new FormData(editCategoryForm)
+                });
+
+                const result = await response.json();
+
+                const message =
+                    document.getElementById("editCategoryMessage");
+
+                if (!response.ok || !result.success) {
+                    message.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${result.message || "Could not update category."}
+                        </div>`;
+                    return;
+                }
+
+                message.innerHTML = `
+                    <div class="alert alert-success">
+                        ${result.message}
+                        <a href="/Admin/Index#categories">
+                            Return to Product Categories
+                        </a>
+                    </div>`;
+            }
+            catch {
+                document.getElementById("editCategoryMessage").innerHTML = `
+                    <div class="alert alert-danger">
+                        Something went wrong. Please try again.
+                    </div>`;
+            }
+        });
+    </script>
+}
